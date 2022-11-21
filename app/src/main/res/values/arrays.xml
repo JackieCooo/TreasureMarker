@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="category">
-        <item>None</item>
+        <item>All</item>
         <item>Foods</item>
         <item>Travel</item>
         <item>Sports</item>
