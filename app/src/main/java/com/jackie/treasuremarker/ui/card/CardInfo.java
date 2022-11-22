@@ -63,6 +63,6 @@ public class CardInfo {
     @NotNull
     @Override
     public String toString() {
-        return title + "," + address + "," + type + "," + date;
+        return title + "," + address + "," + type + "," + date.toString();
     }
 }

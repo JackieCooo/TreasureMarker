@@ -3,28 +3,26 @@ package com.jackie.treasuremarker.ui.card;
 import android.app.Application;
 import android.content.Context;
 import android.util.Log;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Scanner;
 
-public class CardViewModel extends ViewModel {
+public class CardViewModel extends AndroidViewModel {
     private MutableLiveData<LinkedList<CardInfo>> info;
-    private Application application;
     private final static String DATABASE_PATH = "card_database.csv";
     private final static String DATABASE_HEADER = "title,address,type,date";
     private final static String TAG = "CardViewModel";
 
-    public CardViewModel() {
+    public CardViewModel(@NonNull @NotNull Application application) {
+        super(application);
         info = new MutableLiveData<>();
         info.setValue(new LinkedList<>());
-    }
-
-    public void setApplication(Application application) {
-        this.application = application;
     }
 
     public MutableLiveData<LinkedList<CardInfo>> getInfo() {
@@ -39,7 +37,7 @@ public class CardViewModel extends ViewModel {
     public void load() {
         FileOutputStream fos = null;
         FileInputStream fis = null;
-        Context context = this.application.getApplicationContext();
+        Context context = getApplication().getApplicationContext();
 
         String[] fileList = context.fileList();
         Log.i(TAG, "File list length: " + fileList.length);
@@ -137,7 +135,7 @@ public class CardViewModel extends ViewModel {
     public void save() {
         Log.i(TAG, "Saving data...");
         FileOutputStream fos = null;
-        Context context = this.application.getApplicationContext();
+        Context context = getApplication().getApplicationContext();
 
         try {
             fos = context.openFileOutput(DATABASE_PATH, Context.MODE_PRIVATE);
@@ -175,6 +173,7 @@ public class CardViewModel extends ViewModel {
 
     @Override
     protected void onCleared() {
+        Log.i(TAG, "View model clear");
         save();
         super.onCleared();
     }

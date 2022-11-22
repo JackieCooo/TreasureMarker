@@ -1,6 +1,7 @@
 package com.jackie.treasuremarker;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -15,7 +16,6 @@ import com.jackie.treasuremarker.ui.card.CardViewModel;
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
-    private CardViewModel model;
     private final static String TAG = "MainActivity";
 
     @Override
@@ -25,11 +25,6 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "Init content view");
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        Log.i(TAG, "Init card view model");
-        model = new ViewModelProvider(this).get(CardViewModel.class);
-        model.setApplication(getApplication());
-        model.load();
 
         Log.i(TAG, "Init navigation");
         BottomNavigationView navView = findViewById(R.id.nav_view);

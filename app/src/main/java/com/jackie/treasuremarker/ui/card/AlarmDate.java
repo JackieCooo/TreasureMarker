@@ -74,13 +74,13 @@ public class AlarmDate {
     @NotNull
     @Override
     public String toString() {
-        return year + "." + month + "." + day + " " + hour + ":" + minute + ":" + second;
+        return year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second;
     }
 
     public void parse(String tar) {
         String[] tmp1 = tar.split(" ");
         if (tmp1.length != 2) return;
-        String[] tmp2 = tmp1[0].split(".");
+        String[] tmp2 = tmp1[0].split("-");
         if (tmp2.length != 3) return;
         this.year = Integer.parseInt(tmp2[0]);
         this.month = Integer.parseInt(tmp2[1]);
@@ -95,7 +95,7 @@ public class AlarmDate {
     public static boolean validate(String tar) {
         String[] tmp1 = tar.split(" ");
         if (tmp1.length != 2) return false;
-        String[] tmp2 = tmp1[0].split(".");
+        String[] tmp2 = tmp1[0].split("-");
         if (tmp2.length != 3) return false;
         String[] tmp3 = tmp1[1].split(":");
         if (tmp3.length != 3) return false;

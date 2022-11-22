@@ -8,6 +8,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.jackie.treasuremarker.R;
 
 public class CardView extends ConstraintLayout {
+    private CardInfo info;
+
     public CardView(Context context) {
         super(context);
         initView(context, null);
