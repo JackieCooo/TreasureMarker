@@ -1,6 +1,7 @@
 package com.jackie.treasuremarker;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,7 +12,9 @@ import com.bigkoo.pickerview.view.TimePickerView;
 import com.jackie.treasuremarker.databinding.ActivityAddBinding;
 import com.jackie.treasuremarker.databinding.LayoutDateSelectBinding;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class AddActivity extends AppCompatActivity {
 
@@ -31,7 +34,30 @@ public class AddActivity extends AppCompatActivity {
         });
 
         binding.submitBtn.setOnClickListener(v -> {
+            Intent intent = new Intent("com.jackie.treasuremarker.ACTION_CARD_ADDED");
+            Bundle bundle = new Bundle();
 
+            bundle.putString("title", binding.titleText.getText().toString());
+            bundle.putString("address", binding.addressText.getText().toString());
+            bundle.putString("type", binding.categoryType.getSelectedItem().toString());
+            if (binding.alarmSwitch.isChecked()) {
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date d = null;
+                try {
+                    d = dateFormat.parse(dateSelectBinding.dateText.getText().toString());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                bundle.putSerializable("alarm", d);
+            }
+            else {
+                bundle.putSerializable("alarm", null);
+            }
+            intent.putExtras(bundle);
+
+            sendBroadcast(intent);
+
+            finish();
         });
 
         binding.alarmSwitch.setOnCheckedChangeListener((v, c) -> {
@@ -43,7 +69,6 @@ public class AddActivity extends AppCompatActivity {
                 constraintSet.connect(R.id.layout_date_select, ConstraintSet.LEFT, R.id.add_activity_root, ConstraintSet.LEFT);
                 constraintSet.connect(R.id.layout_date_select, ConstraintSet.RIGHT, R.id.add_activity_root, ConstraintSet.RIGHT);
                 constraintSet.connect(R.id.layout_date_select, ConstraintSet.TOP, R.id.alarm_setting_layout, ConstraintSet.BOTTOM);
-                constraintSet.constrainPercentWidth(R.id.layout_date_select, 1);
                 layout.setConstraintSet(constraintSet);
             }
             else {

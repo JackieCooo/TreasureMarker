@@ -1,5 +1,6 @@
 package com.jackie.treasuremarker.ui.card;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.util.Log;
@@ -9,6 +10,8 @@ import androidx.lifecycle.MutableLiveData;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Scanner;
@@ -89,9 +92,6 @@ public class CardViewModel extends AndroidViewModel {
                 cardInfo.setTitle(raw[0]);
                 cardInfo.setAddress(raw[1]);
                 switch (raw[2]) {
-                    case "ALL":
-                        cardInfo.setType(CategoryType.ALL);
-                        break;
                     case "FOODS":
                         cardInfo.setType(CategoryType.FOODS);
                         break;
@@ -107,11 +107,19 @@ public class CardViewModel extends AndroidViewModel {
                     case "ENTERTAINMENT":
                         cardInfo.setType(CategoryType.ENTERTAINMENT);
                         break;
+                    case "UNCATEGORIZED":
+                        cardInfo.setType(CategoryType.UNCATEGORIZED);
+                        break;
                     default:
                         cardInfo.setType(null);
                 }
-                if (AlarmDate.validate(raw[3])) {
-                    cardInfo.setDate(new AlarmDate(raw[3]));
+                if (raw[3].equals("null")) {
+                    @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    try {
+                        cardInfo.setDate(dateFormat.parse(raw[3]));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                 }
                 else {
                     cardInfo.setDate(null);
