@@ -1,6 +1,7 @@
 package com.jackie.treasuremarker.ui.home;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -26,6 +32,7 @@ import com.jackie.treasuremarker.ModifyActivity;
 import com.jackie.treasuremarker.databinding.FragmentHomeBinding;
 import com.jackie.treasuremarker.databinding.LayoutInfoCardBinding;
 import com.jackie.treasuremarker.ui.card.*;
+import com.jackie.treasuremarker.utils.RequestCode;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -89,8 +96,20 @@ public class HomeFragment extends Fragment {
 
         Button addBtn = binding.addBtn;
         addBtn.setOnClickListener(v -> {
+            ActivityResultLauncher<Intent> launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    assert result.getData() != null;
+                    CardInfo info = new CardInfo();
+                    Bundle bundle = result.getData().getExtras();
+                    fillInfoByBundle(info, bundle);
+                    Log.i(TAG, "Card added: " + info);
+
+                    model.append(info);
+                    cardHolder.addView(createCard(info));
+                }
+            });
             Intent intent = new Intent(getActivity(), AddActivity.class);
-            startActivity(intent);
+            launcher.launch(intent);
         });
 
         return root;

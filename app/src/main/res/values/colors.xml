@@ -14,4 +14,5 @@
     <color name="color_category_photography">#D81B60</color>
     <color name="color_category_entertainment">#FDD835</color>
     <color name="color_category_uncategorized">#808080</color>
+    <color name="color_image_view_bg">#969696</color>
 </resources>

@@ -1,6 +1,7 @@
 package com.jackie.treasuremarker.ui.card;
 
 import android.annotation.SuppressLint;
+import android.net.Uri;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
@@ -11,6 +12,7 @@ public class CardInfo {
     private String address;
     private CategoryType type;
     private Date date;
+    private Uri picUri;
 
     public CardInfo() {}
 
@@ -64,6 +66,14 @@ public class CardInfo {
         this.date = date;
     }
 
+    public Uri getPicPath() {
+        return picUri;
+    }
+
+    public void setPicPath(Uri picPath) {
+        this.picUri = picPath;
+    }
+
     @NotNull
     @Override
     public String toString() {
@@ -75,6 +85,6 @@ public class CardInfo {
             @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             strDate = dateFormat.format(date);
         }
-        return title + "," + address + "," + type + "," + strDate;
+        return title + "," + address + "," + type + "," + strDate + "," + picUri;
     }
 }
