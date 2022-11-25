@@ -3,6 +3,9 @@ package com.jackie.treasuremarker.ui.card;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -19,7 +22,7 @@ import java.util.Scanner;
 public class CardViewModel extends AndroidViewModel {
     private MutableLiveData<LinkedList<CardInfo>> info;
     private final static String DATABASE_PATH = "card_database.csv";
-    private final static String DATABASE_HEADER = "title,address,type,date";
+    private final static String DATABASE_HEADER = "title,address,type,date,pic,visited";
     private final static String TAG = "CardViewModel";
 
     public CardViewModel(@NonNull @NotNull Application application) {
@@ -38,7 +41,6 @@ public class CardViewModel extends AndroidViewModel {
     }
 
     public void load() {
-        FileOutputStream fos = null;
         FileInputStream fis = null;
         Context context = getApplication().getApplicationContext();
 
@@ -49,32 +51,8 @@ public class CardViewModel extends AndroidViewModel {
         }
 
         if (Arrays.stream(fileList).noneMatch(s -> s.equals(DATABASE_PATH))) {
-            Log.i(TAG, "Create database file");
-            try {
-                fos = context.openFileOutput(DATABASE_PATH, Context.MODE_APPEND);
-                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
-                try {
-                    bw.write(DATABASE_HEADER);
-                    bw.newLine();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    try {
-                        bw.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    assert fos != null;
-                    fos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            initDatabase();
+            return;
         }
 
         try {
@@ -113,7 +91,8 @@ public class CardViewModel extends AndroidViewModel {
                     default:
                         cardInfo.setType(null);
                 }
-                if (raw[3].equals("null")) {
+
+                if (!raw[3].equals("null")) {
                     @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     try {
                         cardInfo.setDate(dateFormat.parse(raw[3]));
@@ -124,6 +103,15 @@ public class CardViewModel extends AndroidViewModel {
                 else {
                     cardInfo.setDate(null);
                 }
+
+                if (!raw[4].equals("null")) {
+                    cardInfo.setPicUri(Uri.parse(raw[4]));
+                }
+                else {
+                    cardInfo.setPicUri(null);
+                }
+
+                cardInfo.setVisited(raw[5].equals("true"));
 
                 append(cardInfo);
             }
@@ -154,7 +142,7 @@ public class CardViewModel extends AndroidViewModel {
                 bw.write(DATABASE_HEADER);
                 bw.newLine();
                 for (CardInfo i : info.getValue()) {
-                    Log.i(TAG, "Write line: " + i);
+                    Log.i(TAG, "Write line: " + i.toString());
                     bw.write(i.toString());
                     bw.newLine();
                 }
@@ -172,6 +160,39 @@ public class CardViewModel extends AndroidViewModel {
         } finally {
             assert fos != null;
             try {
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void initDatabase() {
+        FileOutputStream fos = null;
+        Context context = getApplication().getApplicationContext();
+
+        Log.i(TAG, "Creating database...");
+        try {
+            fos = context.openFileOutput(DATABASE_PATH, Context.MODE_APPEND);
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+            try {
+                bw.write(DATABASE_HEADER);
+                bw.newLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    bw.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            Log.i(TAG, "Database created");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                assert fos != null;
                 fos.close();
             } catch (IOException e) {
                 e.printStackTrace();

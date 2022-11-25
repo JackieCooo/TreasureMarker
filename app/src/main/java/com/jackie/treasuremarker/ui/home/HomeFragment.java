@@ -2,21 +2,17 @@ package com.jackie.treasuremarker.ui.home;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,7 +30,6 @@ import com.jackie.treasuremarker.databinding.LayoutInfoCardBinding;
 import com.jackie.treasuremarker.ui.card.*;
 import com.jackie.treasuremarker.utils.RequestCode;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 
@@ -42,50 +37,42 @@ public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
     private CardViewModel model;
-    private IntentFilter broadcastFilter;
-    private AddActionReceiver broadcastReceiver;
     private LinearLayout cardHolder;
+    private ActivityResultLauncher<Intent> launcher;
     private final static String TAG = "HomeFragment";
-
-    private class AddActionReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Bundle bundle = intent.getExtras();
-
-            if (intent.getAction().equals("com.jackie.treasuremarker.ACTION_CARD_ADDED")) {
-                CardInfo info = new CardInfo();
-                fillInfoByBundle(info, bundle);
-                Log.i(TAG, "Card added: " + info);
-
-                model.append(info);
-                cardHolder.addView(createCard(info));
-            }
-            else if (intent.getAction().equals("com.jackie.treasuremarker.ACTION_CARD_MODIFIED")) {
-                LinkedList<CardInfo> value = model.getInfo().getValue();
-                assert value != null;
-                CardInfo info = value.get(bundle.getInt("index") - 1);
-                fillInfoByBundle(info, bundle);
-                Log.i(TAG, "Card modified: " + info);
-
-                View view = cardHolder.getChildAt(bundle.getInt("index"));
-                LayoutInfoCardBinding tarBinding = LayoutInfoCardBinding.bind(view);
-                updateCardByModel(tarBinding, info);
-            }
-        }
-    }
 
     @Override
     public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        model = new ViewModelProvider(this).get(CardViewModel.class);
-//        model.load();
+        model = new ViewModelProvider(requireActivity()).get(CardViewModel.class);
 
-        broadcastFilter = new IntentFilter();
-        broadcastFilter.addAction("com.jackie.treasuremarker.ACTION_CARD_ADDED");
-        broadcastFilter.addAction("com.jackie.treasuremarker.ACTION_CARD_MODIFIED");
-        broadcastReceiver = new AddActionReceiver();
-        if (getActivity() != null) getActivity().registerReceiver(broadcastReceiver, broadcastFilter);
+        launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+                assert result.getData() != null;
+                Bundle bundle = result.getData().getExtras();
+                int code = bundle.getInt("request_code");
+                if (code == RequestCode.CARD_ADDED) {
+                    CardInfo info = new CardInfo();
+                    fillInfoByBundle(info, bundle);
+                    Log.i(TAG, "Card added: " + info);
+
+                    model.append(info);
+                    appendCard(info);
+                }
+                else if (code == RequestCode.CARD_MODIFIED) {
+                    LinkedList<CardInfo> value = model.getInfo().getValue();
+                    assert value != null;
+                    CardInfo info = value.get(bundle.getInt("index") - 1);
+                    fillInfoByBundle(info, bundle);
+                    Log.i(TAG, "Card modified: " + info);
+
+                    View view = cardHolder.getChildAt(bundle.getInt("index"));
+                    LayoutInfoCardBinding tarBinding = LayoutInfoCardBinding.bind(view);
+                    updateCardByModel(tarBinding, info);
+                }
+            }
+        });
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -93,21 +80,10 @@ public class HomeFragment extends Fragment {
         View root = binding.getRoot();
 
         cardHolder = binding.homeCardHolder;
+        refreshCardList();
 
         Button addBtn = binding.addBtn;
         addBtn.setOnClickListener(v -> {
-            ActivityResultLauncher<Intent> launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    assert result.getData() != null;
-                    CardInfo info = new CardInfo();
-                    Bundle bundle = result.getData().getExtras();
-                    fillInfoByBundle(info, bundle);
-                    Log.i(TAG, "Card added: " + info);
-
-                    model.append(info);
-                    cardHolder.addView(createCard(info));
-                }
-            });
             Intent intent = new Intent(getActivity(), AddActivity.class);
             launcher.launch(intent);
         });
@@ -118,7 +94,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (getActivity() != null) getActivity().unregisterReceiver(broadcastReceiver);
         binding = null;
     }
 
@@ -159,10 +134,10 @@ public class HomeFragment extends Fragment {
             bundle.putInt("index", cardHolder.indexOfChild(cardBinding.getRoot()));
             intent.putExtras(bundle);
 
-            startActivity(intent);
+            launcher.launch(intent);
         });
 
-        cardBinding.cardDelBtn.setOnClickListener(v -> {
+        cardBinding.planCardDelBtn.setOnClickListener(v -> {
             delModelByView(cardBinding.getRoot());
             cardHolder.removeView(cardBinding.getRoot());
         });
@@ -198,14 +173,15 @@ public class HomeFragment extends Fragment {
         }
         info.setType(type);
         info.setDate((Date) bundle.getSerializable("alarm"));
+        info.setPicUri((Uri) bundle.getParcelable("uri"));
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
     private void updateCardByModel(LayoutInfoCardBinding view, CardInfo info) {
         MainActivity activity = (MainActivity) getActivity();
         assert activity != null;
-        view.cardTitle.setText(info.getTitle());
-        view.cardAddress.setText(info.getAddress());
+        view.planCardTitle.setText(info.getTitle());
+        view.planCardAddress.setText(info.getAddress());
         int color;
         switch (info.getType()) {
             case FOODS:
@@ -229,10 +205,28 @@ public class HomeFragment extends Fragment {
             default:
                 color = 0;
         }
-        view.categoryTag.setBackgroundColor(color);
+        view.planCardCategoryTag.setBackgroundColor(color);
         if (info.getDate() != null) {
             view.cardAlarmBtn.setBackground(activity.getDrawable(R.drawable.ic_notifications_primary));
         }
+        if (info.getPicUri() != null) {
+            view.planCardImage.setImageURI(info.getPicUri());
+        }
+    }
+
+    public void refreshCardList() {
+        assert model.getInfo().getValue() != null;
+        LinkedList<CardInfo> value = model.getInfo().getValue();
+        for (CardInfo i : value) {
+            appendCard(i);
+        }
+    }
+
+    public void appendCard(CardInfo info) {
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+        layoutParams.topMargin = 20;
+        cardHolder.addView(createCard(info), layoutParams);
     }
 
     private CardInfo getModelByView(View view) {

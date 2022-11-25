@@ -15,4 +15,6 @@
     <color name="color_category_entertainment">#FDD835</color>
     <color name="color_category_uncategorized">#808080</color>
     <color name="color_image_view_bg">#969696</color>
+    <color name="color_navi_item_selected">@color/design_default_color_primary</color>
+    <color name="color_navi_item_normal">#808080</color>
 </resources>

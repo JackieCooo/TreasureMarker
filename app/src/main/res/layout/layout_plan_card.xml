@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                   xmlns:tools="http://schemas.android.com/tools"
+                                                   android:layout_width="match_parent"
+                                                   android:layout_height="wrap_content" android:paddingStart="10dp"
+                                                   android:paddingTop="10dp"
+                                                   android:paddingEnd="10dp" android:paddingBottom="10dp"
+                                                   android:layout_gravity="center_horizontal"
+                                                   android:layout_marginTop="20dp">
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" android:id="@+id/plan_card" android:background="#E6E6E6"
+            android:paddingLeft="10dp"
+            android:paddingBottom="10dp" android:paddingRight="10dp" android:paddingTop="10dp">
+
+        <View
+                android:layout_width="10dp"
+                android:layout_height="50dp" android:id="@+id/plan_card_category_tag"
+                app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"/>
+        <TextView
+                android:text="TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:id="@+id/plan_card_title"
+                android:textStyle="bold" android:textSize="20sp"
+                app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toEndOf="@+id/plan_card_category_tag"
+                android:layout_marginStart="10dp"/>
+        <TextView
+                android:text="TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:id="@+id/plan_card_address"
+                app:layout_constraintTop_toBottomOf="@+id/plan_card_title"
+                app:layout_constraintStart_toEndOf="@+id/plan_card_category_tag" android:layout_marginStart="10dp"
+                android:layout_marginTop="8dp"/>
+        <ImageView
+                android:layout_width="200dp"
+                android:layout_height="100dp" android:id="@+id/plan_card_image"
+                android:scaleType="centerCrop"
+                android:clickable="true"
+                app:layout_constraintTop_toBottomOf="@+id/plan_card_address" app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="10dp"/>
+        <ToggleButton
+                android:layout_width="30dp"
+                android:layout_height="30dp" android:id="@+id/plan_card_checked_btn"
+                android:textOff=" " android:textOn=" "
+                android:background="@drawable/ic_unchecked"
+                app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent"/>
+        <Button
+                android:layout_width="40dp"
+                android:layout_height="40dp" android:id="@+id/plan_card_del_btn"
+                android:background="@drawable/ic_delete"
+                app:layout_constraintEnd_toEndOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/plan_card_image" android:layout_marginStart="10dp"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <View
+            android:id="@+id/divider"
+            android:layout_width="350dp"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintBottom_toTopOf="@+id/plan_card"
+            android:layout_marginBottom="8dp" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+    />
+    <TextView
+            android:text="TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent" android:id="@+id/plan_card_date_text"
+            app:layout_constraintBottom_toTopOf="@+id/divider" android:layout_marginBottom="5dp"
+            app:layout_constraintStart_toStartOf="@+id/divider"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

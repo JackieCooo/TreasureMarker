@@ -2,6 +2,7 @@ package com.jackie.treasuremarker;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -36,6 +37,8 @@ public class AddActivity extends AppCompatActivity {
 
     private ActivityAddBinding binding;
     private LayoutDateSelectBinding dateSelectBinding;
+    private Bundle bundle = new Bundle();
+
     private final static String TAG = "AddActivity";
 
     @Override
@@ -51,9 +54,9 @@ public class AddActivity extends AppCompatActivity {
         });
 
         binding.submitBtn.setOnClickListener(v -> {
-            Intent intent = new Intent("com.jackie.treasuremarker.ACTION_CARD_ADDED");
-            Bundle bundle = new Bundle();
+            Intent intent = new Intent();
 
+            bundle.putInt("request_code", RequestCode.CARD_ADDED);
             bundle.putString("title", binding.titleText.getText().toString());
             bundle.putString("address", binding.addressText.getText().toString());
             bundle.putString("type", binding.categoryType.getSelectedItem().toString());
@@ -70,10 +73,8 @@ public class AddActivity extends AppCompatActivity {
             else {
                 bundle.putSerializable("alarm", null);
             }
-
             intent.putExtras(bundle);
-
-            sendBroadcast(intent);
+            setResult(Activity.RESULT_OK, intent);
 
             finish();
         });
@@ -91,7 +92,8 @@ public class AddActivity extends AppCompatActivity {
             ConstraintLayout layout = binding.addActivityRoot;
             ConstraintSet constraintSet = new ConstraintSet();
             if (c) {
-                layout.addView(dateSelectBinding.getRoot());
+                ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
+                layout.addView(dateSelectBinding.getRoot(), layoutParams);
                 constraintSet.clone(layout);
                 constraintSet.connect(R.id.layout_date_select, ConstraintSet.LEFT, R.id.add_activity_root, ConstraintSet.LEFT);
                 constraintSet.connect(R.id.layout_date_select, ConstraintSet.RIGHT, R.id.add_activity_root, ConstraintSet.RIGHT);
@@ -124,6 +126,7 @@ public class AddActivity extends AppCompatActivity {
         if (requestCode == RequestCode.MATISSE && resultCode == RESULT_OK) {
             assert data != null;
             List<Uri> uris = Matisse.obtainResult(data);
+            bundle.putParcelable("uri", uris.get(0));
             Log.i(TAG, "Selected: " + uris);
 
             Glide.with(AddActivity.this).load(uris.get(0)).into(binding.image);
