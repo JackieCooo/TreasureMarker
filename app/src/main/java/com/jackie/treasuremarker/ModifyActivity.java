@@ -12,10 +12,13 @@ import android.widget.SpinnerAdapter;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import com.bumptech.glide.Glide;
 import com.jackie.treasuremarker.databinding.ActivityModifyBinding;
+import com.jackie.treasuremarker.databinding.LayoutDateSelectBinding;
 import com.jackie.treasuremarker.utils.RequestCode;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
@@ -27,6 +30,7 @@ import java.util.List;
 
 public class ModifyActivity extends AppCompatActivity {
     private ActivityModifyBinding binding;
+    private LayoutDateSelectBinding dateSelectBinding;
     private Bundle resultBundle = new Bundle();
     private final static String TAG = "ModifyActivity";
 
@@ -47,6 +51,20 @@ public class ModifyActivity extends AppCompatActivity {
                 binding.categoryType.setSelection(i);
                 break;
             }
+        }
+
+        if (bundle.getSerializable("date") != null) {
+            ConstraintLayout layout = binding.modifyActivityRoot;
+            dateSelectBinding = LayoutDateSelectBinding.inflate(getLayoutInflater());
+            ConstraintSet constraintSet = new ConstraintSet();
+
+            ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
+            layout.addView(dateSelectBinding.getRoot(), layoutParams);
+            constraintSet.clone(layout);
+            constraintSet.connect(R.id.layout_date_select, ConstraintSet.LEFT, R.id.modify_activity_root, ConstraintSet.LEFT);
+            constraintSet.connect(R.id.layout_date_select, ConstraintSet.RIGHT, R.id.modify_activity_root, ConstraintSet.RIGHT);
+            constraintSet.connect(R.id.layout_date_select, ConstraintSet.TOP, R.id.alarm_setting_layout, ConstraintSet.BOTTOM);
+            layout.setConstraintSet(constraintSet);
         }
 
         binding.backBtn.setOnClickListener(v -> {
@@ -70,7 +88,7 @@ public class ModifyActivity extends AppCompatActivity {
 
         binding.image.setOnClickListener(v -> {
             if (ContextCompat.checkSelfPermission(ModifyActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(ModifyActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCode.EXTERNAL_STORAGE);
+                ActivityCompat.requestPermissions(ModifyActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, RequestCode.EXTERNAL_STORAGE);
             }
             else {
                 createPhotoPicker();
@@ -109,6 +127,7 @@ public class ModifyActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         binding = null;
+        dateSelectBinding = null;
     }
 
     private void createPhotoPicker() {

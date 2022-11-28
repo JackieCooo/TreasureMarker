@@ -7,13 +7,13 @@
 
     <fragment
             android:id="@+id/navigation_home"
-            android:name="com.jackie.treasuremarker.ui.home.HomeFragment"
+            android:name="com.jackie.treasuremarker.ui.fragment.HomeFragment"
             android:label="@string/title_home"
             tools:layout="@layout/fragment_home"/>
 
     <fragment
             android:id="@+id/navigation_dashboard"
-            android:name="com.jackie.treasuremarker.ui.plan.PlanFragment"
+            android:name="com.jackie.treasuremarker.ui.fragment.PlanFragment"
             android:label="@string/title_plan"
             tools:layout="@layout/fragment_plan"/>
 </navigation>

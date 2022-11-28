@@ -1,4 +1,4 @@
-package com.jackie.treasuremarker.ui.home;
+package com.jackie.treasuremarker.ui.fragment;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -10,6 +10,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import androidx.activity.result.ActivityResultLauncher;
@@ -63,7 +64,7 @@ public class HomeFragment extends Fragment {
                 else if (code == RequestCode.CARD_MODIFIED) {
                     LinkedList<CardInfo> value = model.getInfo().getValue();
                     assert value != null;
-                    CardInfo info = value.get(bundle.getInt("index") - 1);
+                    CardInfo info = value.get(bundle.getInt("index"));
                     fillInfoByBundle(info, bundle);
                     Log.i(TAG, "Card modified: " + info);
 
@@ -80,12 +81,23 @@ public class HomeFragment extends Fragment {
         View root = binding.getRoot();
 
         cardHolder = binding.homeCardHolder;
-        refreshCardList();
+        refreshCardList(0);
 
-        Button addBtn = binding.addBtn;
-        addBtn.setOnClickListener(v -> {
+        binding.addBtn.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), AddActivity.class);
             launcher.launch(intent);
+        });
+
+        binding.categorySelector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                refreshCardList(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
         });
 
         return root;
@@ -110,14 +122,14 @@ public class HomeFragment extends Fragment {
             if (c) {
                 TimePickerBuilder builder = new TimePickerBuilder(getActivity(), (date, view) -> {
                     i.setDate(date);
-                    cardBinding.cardAlarmBtn.setBackground(activity.getDrawable(R.drawable.ic_notifications_primary));
+                    v.setBackground(activity.getDrawable(R.drawable.ic_notifications_primary));
                 });
                 builder.setType(new boolean[]{true, true, true, true, true, true});
                 TimePickerView timePickerView = builder.build();
                 timePickerView.show();
             }
             else {
-                cardBinding.cardAlarmBtn.setBackground(activity.getDrawable(R.drawable.ic_notifications_disable));
+                v.setBackground(activity.getDrawable(R.drawable.ic_notifications_disable));
                 i.setDate(null);
             }
         });
@@ -131,6 +143,7 @@ public class HomeFragment extends Fragment {
             bundle.putString("title", i.getTitle());
             bundle.putString("address", i.getAddress());
             bundle.putString("type", i.getType().toString());
+            bundle.putSerializable("date", i.getDate());
             bundle.putInt("index", cardHolder.indexOfChild(cardBinding.getRoot()));
             intent.putExtras(bundle);
 
@@ -214,11 +227,14 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    public void refreshCardList() {
+    public void refreshCardList(int pos) {
         assert model.getInfo().getValue() != null;
+        cardHolder.removeAllViews();
         LinkedList<CardInfo> value = model.getInfo().getValue();
         for (CardInfo i : value) {
-            appendCard(i);
+            if (isTypeMatched(i.getType(), pos)) {
+                appendCard(i);
+            }
         }
     }
 
@@ -234,7 +250,7 @@ public class HomeFragment extends Fragment {
         if (i == -1) return null;
         LinkedList<CardInfo> value = model.getInfo().getValue();
         assert value != null;
-        return value.get(i - 1);
+        return value.get(i);
     }
 
     private void delModelByView(View view) {
@@ -242,6 +258,10 @@ public class HomeFragment extends Fragment {
         if (i == -1) return;
         LinkedList<CardInfo> value = model.getInfo().getValue();
         assert value != null;
-        value.remove(i - 1);
+        value.remove(i);
+    }
+
+    private boolean isTypeMatched(CategoryType type, int pos) {
+        return (type == CategoryType.FOODS && pos == 1) || (type == CategoryType.TRAVEL && pos == 2) ||(type == CategoryType.SPORTS && pos == 3) ||(type == CategoryType.PHOTOGRAPHY && pos == 4) ||(type == CategoryType.ENTERTAINMENT && pos == 5) || pos == 0;
     }
 }

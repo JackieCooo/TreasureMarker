@@ -1,4 +1,4 @@
-package com.jackie.treasuremarker.ui.plan;
+package com.jackie.treasuremarker.ui.fragment;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -36,7 +36,7 @@ public class PlanFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentPlanBinding.inflate(inflater, container, false);
-        cardHolder = binding.getRoot();
+        cardHolder = binding.planCardHolder;
         refreshCardList();
         return binding.getRoot();
     }
@@ -84,6 +84,9 @@ public class PlanFragment extends Fragment {
         if (info.getPicUri() != null) {
             view.planCardImage.setImageURI(info.getPicUri());
         }
+        if (info.getVisited()) {
+            view.planCardCheckedBtn.setChecked(true);
+        }
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -98,6 +101,17 @@ public class PlanFragment extends Fragment {
             cardHolder.removeView(cardBinding.getRoot());
         });
 
+        cardBinding.planCardCheckedBtn.setOnCheckedChangeListener((v, c) -> {
+            if (c) {
+                v.setBackground(activity.getDrawable(R.drawable.ic_checked));
+                info.setVisited(true);
+            }
+            else {
+                v.setBackground(activity.getDrawable(R.drawable.ic_unchecked));
+                info.setVisited(false);
+            }
+        });
+
         return cardBinding.getRoot();
     }
 
@@ -110,6 +124,7 @@ public class PlanFragment extends Fragment {
 
     public void refreshCardList() {
         assert model.getInfo().getValue() != null;
+        cardHolder.removeAllViews();
         LinkedList<CardInfo> value = model.getInfo().getValue();
         for (CardInfo i : value) {
             if (i.getDate() != null) {
