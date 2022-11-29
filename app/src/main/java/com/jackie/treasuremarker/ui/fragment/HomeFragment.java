@@ -35,7 +35,6 @@ import java.util.Date;
 import java.util.LinkedList;
 
 public class HomeFragment extends Fragment {
-
     private FragmentHomeBinding binding;
     private CardViewModel model;
     private LinearLayout cardHolder;
@@ -150,7 +149,7 @@ public class HomeFragment extends Fragment {
             launcher.launch(intent);
         });
 
-        cardBinding.planCardDelBtn.setOnClickListener(v -> {
+        cardBinding.homeCardDelBtn.setOnClickListener(v -> {
             delModelByView(cardBinding.getRoot());
             cardHolder.removeView(cardBinding.getRoot());
         });
@@ -193,8 +192,8 @@ public class HomeFragment extends Fragment {
     private void updateCardByModel(LayoutInfoCardBinding view, CardInfo info) {
         MainActivity activity = (MainActivity) getActivity();
         assert activity != null;
-        view.planCardTitle.setText(info.getTitle());
-        view.planCardAddress.setText(info.getAddress());
+        view.homeCardTitle.setText(info.getTitle());
+        view.homeCardAddress.setText(info.getAddress());
         int color;
         switch (info.getType()) {
             case FOODS:
@@ -218,12 +217,12 @@ public class HomeFragment extends Fragment {
             default:
                 color = 0;
         }
-        view.planCardCategoryTag.setBackgroundColor(color);
+        view.homeCardCategoryTag.setBackgroundColor(color);
         if (info.getDate() != null) {
             view.cardAlarmBtn.setBackground(activity.getDrawable(R.drawable.ic_notifications_primary));
         }
         if (info.getPicUri() != null) {
-            view.planCardImage.setImageURI(info.getPicUri());
+            view.homeCardImage.setImageURI(info.getPicUri());
         }
     }
 

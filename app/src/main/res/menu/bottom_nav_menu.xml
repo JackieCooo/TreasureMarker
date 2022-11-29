@@ -7,8 +7,13 @@
             android:title="@string/title_home"/>
 
     <item
-            android:id="@+id/navigation_dashboard"
+            android:id="@+id/navigation_plan"
             android:icon="@drawable/ic_plan"
             android:title="@string/title_plan"/>
+
+    <item
+            android:id="@+id/navigation_visited"
+            android:icon="@drawable/ic_visited"
+            android:title="@string/title_visited"/>
 
 </menu>

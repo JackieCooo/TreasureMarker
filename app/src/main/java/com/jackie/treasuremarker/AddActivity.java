@@ -34,11 +34,9 @@ import java.util.Date;
 import java.util.List;
 
 public class AddActivity extends AppCompatActivity {
-
     private ActivityAddBinding binding;
     private LayoutDateSelectBinding dateSelectBinding;
     private Bundle bundle = new Bundle();
-
     private final static String TAG = "AddActivity";
 
     @Override

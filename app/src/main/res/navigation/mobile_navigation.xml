@@ -12,8 +12,14 @@
             tools:layout="@layout/fragment_home"/>
 
     <fragment
-            android:id="@+id/navigation_dashboard"
+            android:id="@+id/navigation_plan"
             android:name="com.jackie.treasuremarker.ui.fragment.PlanFragment"
             android:label="@string/title_plan"
             tools:layout="@layout/fragment_plan"/>
+
+    <fragment
+            android:id="@+id/navigation_visited"
+            android:name="com.jackie.treasuremarker.ui.fragment.VisitedFragment"
+            android:label="@string/title_visited"
+            tools:layout="@layout/fragment_visited"/>
 </navigation>

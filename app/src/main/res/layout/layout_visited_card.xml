@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                   xmlns:tools="http://schemas.android.com/tools"
+                                                   android:layout_width="wrap_content"
+                                                   android:layout_height="wrap_content" android:id="@+id/visited_card"
+                                                   android:paddingLeft="10dp" android:paddingTop="10dp"
+                                                   android:paddingRight="10dp" android:paddingBottom="10dp"
+                                                   android:background="#E6E6E6">
+    <View
+            android:layout_width="10dp"
+            android:layout_height="50dp" android:id="@+id/visited_card_category_tag"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"/>
+    <TextView
+            android:text="TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/visited_card_title"
+            android:textStyle="bold" android:textSize="20sp"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toEndOf="@+id/visited_card_category_tag"
+            android:layout_marginStart="10dp"/>
+    <TextView
+            android:text="TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/visited_card_address"
+            app:layout_constraintTop_toBottomOf="@+id/visited_card_title"
+            app:layout_constraintStart_toEndOf="@+id/visited_card_category_tag" android:layout_marginStart="10dp"
+            android:layout_marginTop="8dp"/>
+    <ImageView
+            android:layout_width="200dp"
+            android:layout_height="100dp" android:id="@+id/visited_card_image"
+            android:scaleType="centerCrop"
+            android:clickable="true"
+            app:layout_constraintTop_toBottomOf="@+id/visited_card_address" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="10dp"/>
+    <Button
+            android:layout_width="40dp"
+            android:layout_height="40dp" android:id="@+id/visited_card_del_btn"
+            android:background="@drawable/ic_delete"
+            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/visited_card_image" android:layout_marginStart="10dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
