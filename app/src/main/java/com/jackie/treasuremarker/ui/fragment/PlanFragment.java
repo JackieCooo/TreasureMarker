@@ -20,7 +20,10 @@ import com.jackie.treasuremarker.ui.card.CardInfo;
 import com.jackie.treasuremarker.ui.card.CardViewModel;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.List;
 
 public class PlanFragment extends Fragment {
     private FragmentPlanBinding binding;
@@ -125,7 +128,8 @@ public class PlanFragment extends Fragment {
     public void refreshCardList() {
         assert model.getInfo().getValue() != null;
         cardHolder.removeAllViews();
-        LinkedList<CardInfo> value = model.getInfo().getValue();
+        List<CardInfo> value = model.getInfo().getValue();
+        value.sort(Comparator.comparing(CardInfo::getDate));
         for (CardInfo i : value) {
             if (i.getDate() != null) {
                 appendCard(i);

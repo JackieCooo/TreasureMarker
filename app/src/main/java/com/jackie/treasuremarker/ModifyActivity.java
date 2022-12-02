@@ -1,6 +1,7 @@
 package com.jackie.treasuremarker;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -26,6 +27,9 @@ import com.zhihu.matisse.engine.impl.GlideEngine;
 import com.zhihu.matisse.internal.entity.CaptureStrategy;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class ModifyActivity extends AppCompatActivity {
@@ -44,13 +48,20 @@ public class ModifyActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         binding.titleText.setText(bundle.getString("title"));
         binding.addressText.setText(bundle.getString("address"));
+
         SpinnerAdapter adapter = binding.categoryType.getAdapter();
         int cnt = adapter.getCount();
         for (int i = 0; i < cnt; ++i) {
-            if (bundle.getString("type").equals(adapter.getItem(i).toString())) {
+            String strType = adapter.getItem(i).toString().toUpperCase();
+            if (bundle.getString("type").equals(strType)) {
                 binding.categoryType.setSelection(i);
                 break;
             }
+        }
+
+        if (bundle.getParcelable("img") != null) {
+            binding.image.setImageURI((Uri) bundle.getParcelable("img"));
+            binding.image.setBackground(null);
         }
 
         if (bundle.getSerializable("date") != null) {
@@ -63,8 +74,13 @@ public class ModifyActivity extends AppCompatActivity {
             constraintSet.clone(layout);
             constraintSet.connect(R.id.layout_date_select, ConstraintSet.LEFT, R.id.modify_activity_root, ConstraintSet.LEFT);
             constraintSet.connect(R.id.layout_date_select, ConstraintSet.RIGHT, R.id.modify_activity_root, ConstraintSet.RIGHT);
-            constraintSet.connect(R.id.layout_date_select, ConstraintSet.TOP, R.id.alarm_setting_layout, ConstraintSet.BOTTOM);
+            constraintSet.connect(R.id.layout_date_select, ConstraintSet.TOP, R.id.image_setting_layout, ConstraintSet.BOTTOM);
             layout.setConstraintSet(constraintSet);
+
+            Date date = (Date) bundle.getSerializable("date");
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String dateString = dateFormat.format(date);
+            dateSelectBinding.dateText.setText(dateString);
         }
 
         binding.backBtn.setOnClickListener(v -> {

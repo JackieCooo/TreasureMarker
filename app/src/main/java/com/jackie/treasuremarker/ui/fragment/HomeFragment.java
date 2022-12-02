@@ -28,6 +28,7 @@ import com.jackie.treasuremarker.R;
 import com.jackie.treasuremarker.ModifyActivity;
 import com.jackie.treasuremarker.databinding.FragmentHomeBinding;
 import com.jackie.treasuremarker.databinding.LayoutInfoCardBinding;
+import com.jackie.treasuremarker.service.NotificationService;
 import com.jackie.treasuremarker.ui.card.*;
 import com.jackie.treasuremarker.utils.RequestCode;
 
@@ -59,6 +60,16 @@ public class HomeFragment extends Fragment {
 
                     model.append(info);
                     appendCard(info);
+
+                    if (info.getDate() != null) {
+                        Intent broadcastIntent = new Intent("com.jackie.treasuremarker.DATE_SET");
+                        Bundle broadcastBundle = new Bundle();
+                        broadcastBundle.putString("title", info.getTitle());
+                        broadcastBundle.putSerializable("date", info.getDate());
+                        broadcastIntent.putExtras(broadcastBundle);
+                        assert  getActivity() != null;
+                        getActivity().sendBroadcast(broadcastIntent);
+                    }
                 }
                 else if (code == RequestCode.CARD_MODIFIED) {
                     LinkedList<CardInfo> value = model.getInfo().getValue();
@@ -143,6 +154,7 @@ public class HomeFragment extends Fragment {
             bundle.putString("address", i.getAddress());
             bundle.putString("type", i.getType().toString());
             bundle.putSerializable("date", i.getDate());
+            bundle.putParcelable("img", i.getPicUri());
             bundle.putInt("index", cardHolder.indexOfChild(cardBinding.getRoot()));
             intent.putExtras(bundle);
 
