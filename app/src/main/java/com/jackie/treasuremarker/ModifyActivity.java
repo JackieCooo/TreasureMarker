@@ -17,6 +17,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import com.bigkoo.pickerview.builder.TimePickerBuilder;
+import com.bigkoo.pickerview.view.TimePickerView;
 import com.bumptech.glide.Glide;
 import com.jackie.treasuremarker.databinding.ActivityModifyBinding;
 import com.jackie.treasuremarker.databinding.LayoutDateSelectBinding;
@@ -81,6 +83,17 @@ public class ModifyActivity extends AppCompatActivity {
             @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String dateString = dateFormat.format(date);
             dateSelectBinding.dateText.setText(dateString);
+
+            dateSelectBinding.pickBtn.setOnClickListener(v -> {
+                TimePickerBuilder builder = new TimePickerBuilder(ModifyActivity.this, (d, view) -> {
+                    String strDate = dateFormat.format(d);
+                    dateSelectBinding.dateText.setText(strDate);
+                    resultBundle.putSerializable("date", d);
+                });
+                builder.setType(new boolean[]{true, true, true, true, true, true});
+                TimePickerView timePickerView = builder.build();
+                timePickerView.show();
+            });
         }
 
         binding.backBtn.setOnClickListener(v -> {
@@ -94,7 +107,6 @@ public class ModifyActivity extends AppCompatActivity {
             resultBundle.putString("title", binding.titleText.getText().toString());
             resultBundle.putString("address", binding.addressText.getText().toString());
             resultBundle.putString("type", binding.categoryType.getSelectedItem().toString());
-            resultBundle.putInt("index", bundle.getInt("index"));
             intent.putExtras(resultBundle);
 
             setResult(Activity.RESULT_OK, intent);

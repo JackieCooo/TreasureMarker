@@ -40,6 +40,7 @@ public class HomeFragment extends Fragment {
     private CardViewModel model;
     private LinearLayout cardHolder;
     private ActivityResultLauncher<Intent> launcher;
+    private int curModifyIndex = -1;
     private final static String TAG = "HomeFragment";
 
     @Override
@@ -74,7 +75,8 @@ public class HomeFragment extends Fragment {
                 else if (code == RequestCode.CARD_MODIFIED) {
                     LinkedList<CardInfo> value = model.getInfo().getValue();
                     assert value != null;
-                    CardInfo info = value.get(bundle.getInt("index"));
+                    assert curModifyIndex != -1;
+                    CardInfo info = value.get(curModifyIndex);
                     fillInfoByBundle(info, bundle);
                     Log.i(TAG, "Card modified: " + info);
 
@@ -155,8 +157,8 @@ public class HomeFragment extends Fragment {
             bundle.putString("type", i.getType().toString());
             bundle.putSerializable("date", i.getDate());
             bundle.putParcelable("img", i.getPicUri());
-            bundle.putInt("index", cardHolder.indexOfChild(cardBinding.getRoot()));
             intent.putExtras(bundle);
+            curModifyIndex = cardHolder.indexOfChild(cardBinding.getRoot());
 
             launcher.launch(intent);
         });
